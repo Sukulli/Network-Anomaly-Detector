@@ -1,6 +1,7 @@
 # Network Intrusion Detection System
 
 [![CI](https://github.com/Sukulli/Network-Anomaly-Detector/actions/workflows/ci.yml/badge.svg)](https://github.com/Sukulli/Network-Anomaly-Detector/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 End-to-end machine learning project for binary network intrusion detection on the UNSW-NB15 dataset.
 
@@ -374,6 +375,19 @@ This keeps the GitHub repository lightweight and reproducible. The model can be 
 ```bash
 python -m src.train --model both --threshold 0.55
 ```
+
+## License
+
+The source code and project documentation in this repository are released under the [MIT License](LICENSE).
+
+This license applies only to this repository's original code and documentation. It does not grant rights over:
+
+- the UNSW-NB15 dataset
+- dataset files downloaded from UNSW or other mirrors
+- generated model binaries such as `models/*.pkl`
+- third-party dependencies listed in `requirements.txt`
+
+The UNSW-NB15 dataset is not redistributed in this repository. Users must obtain it from the official source and follow the dataset authors' citation requirements described in [Dataset Citation](#dataset-citation).
 
 ## Limitations
 
