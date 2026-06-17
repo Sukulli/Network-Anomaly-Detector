@@ -99,6 +99,20 @@ Dataset summary used in the current run:
 
 See [reports/dataset_overview.md](reports/dataset_overview.md).
 
+## Dataset Citation
+
+This project uses the UNSW-NB15 dataset. The official UNSW dataset page states that academic or public use of the dataset should cite the five papers listed by the dataset authors:
+
+- Official dataset page: [The UNSW-NB15 Dataset](https://research.unsw.edu.au/projects/unsw-nb15-dataset)
+
+Required UNSW-NB15 citations:
+
+1. Moustafa, N., and Slay, J. "UNSW-NB15: a comprehensive data set for network intrusion detection systems (UNSW-NB15 network data set)." Military Communications and Information Systems Conference (MilCIS), IEEE, 2015.
+2. Moustafa, N., and Slay, J. "The evaluation of Network Anomaly Detection Systems: Statistical analysis of the UNSW-NB15 dataset and the comparison with the KDD99 dataset." Information Security Journal: A Global Perspective, 2016.
+3. Moustafa, N., et al. "Novel geometric area analysis technique for anomaly detection using trapezoidal area estimation on large-scale networks." IEEE Transactions on Big Data, 2017.
+4. Moustafa, N., et al. "Big data analytics for intrusion detection system: statistical decision-making using finite Dirichlet mixture models." Data Analytics and Decision Support for Cybersecurity, Springer, 2017.
+5. Sarhan, M., Layeghy, S., Moustafa, N., and Portmann, M. "NetFlow Datasets for Machine Learning-Based Network Intrusion Detection Systems." Big Data Technologies and Applications, Springer Nature, 2020.
+
 ## Current Results
 
 The current model artifacts were trained with an operational decision threshold of `0.55`.
