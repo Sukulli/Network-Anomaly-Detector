@@ -130,6 +130,26 @@ Detailed reports:
 - [reports/random_forest_feature_importance.csv](reports/random_forest_feature_importance.csv)
 - [reports/random_forest_grouped_feature_importance.csv](reports/random_forest_grouped_feature_importance.csv)
 
+## Screenshots
+
+The screenshots below show the main evaluation report, the FastAPI documentation, a successful `/predict` request and the runtime monitoring page.
+
+### Model Evaluation Report
+
+![Model evaluation report](docs/images/model-evaluation-report.png)
+
+### API Documentation
+
+![FastAPI documentation](docs/images/api-docs.png)
+
+### Successful Prediction Request
+
+![Successful prediction response](docs/images/predict-response.png)
+
+### Monitoring Dashboard
+
+![Monitoring dashboard](docs/images/monitoring-dashboard.png)
+
 ## Random Forest Interpretation
 
 The Random Forest analysis includes:
