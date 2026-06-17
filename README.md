@@ -1,5 +1,7 @@
 # Network Intrusion Detection System
 
+[![CI](https://github.com/Sukulli/Network-Anomaly-Detector/actions/workflows/ci.yml/badge.svg)](https://github.com/Sukulli/Network-Anomaly-Detector/actions/workflows/ci.yml)
+
 End-to-end machine learning project for binary network intrusion detection on the UNSW-NB15 dataset.
 
 The project trains classical ML classifiers, saves a reusable scikit-learn pipeline, exposes the main model through a FastAPI REST API, and provides basic Prometheus-compatible monitoring.
@@ -333,6 +335,9 @@ Run:
 pytest -q
 ```
 
+GitHub Actions runs the same test suite on every push and pull request to `main`.
+Because trained model binaries are intentionally excluded from Git, CI runs the model-free contract tests and skips the model-dependent API tests with an explicit reason.
+
 The current tests cover:
 
 - `GET /health`
@@ -341,6 +346,8 @@ The current tests cover:
 - `GET /metrics`
 - `GET /monitoring`
 - `GET /monitoring/snapshot`
+- API schema, sample request and metadata contracts
+- required UNSW-NB15 dataset citation in the README
 
 The API tests require `models/model.pkl`. If the model is missing, train the model first.
 
