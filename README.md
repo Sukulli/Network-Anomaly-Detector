@@ -63,6 +63,7 @@ network-anomaly-detector/
 ├── Dockerfile
 ├── docker-compose.yml
 ├── pytest.ini
+├── requirements-dev.txt
 ├── requirements.txt
 └── README.md
 ```
@@ -201,8 +202,12 @@ cd network-anomaly-detector
 
 python3.12 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
 ```
+
+`requirements.txt` contains runtime dependencies used for training, reports and API serving.
+`requirements-dev.txt` includes runtime dependencies plus local development and test tools.
+Docker intentionally installs only `requirements.txt`.
 
 Verify the environment:
 
@@ -330,6 +335,12 @@ Important: model binaries are not intended to be committed to Git. If you clone 
 
 ## Tests
 
+Install development dependencies first:
+
+```bash
+pip install -r requirements-dev.txt
+```
+
 Run:
 
 ```bash
@@ -348,6 +359,7 @@ The current tests cover:
 - `GET /monitoring`
 - `GET /monitoring/snapshot`
 - API schema, sample request and metadata contracts
+- runtime/development dependency file separation
 - required UNSW-NB15 dataset citation in the README
 
 The API tests require `models/model.pkl`. If the model is missing, train the model first.
@@ -385,7 +397,7 @@ This license applies only to this repository's original code and documentation. 
 - the UNSW-NB15 dataset
 - dataset files downloaded from UNSW or other mirrors
 - generated model binaries such as `models/*.pkl`
-- third-party dependencies listed in `requirements.txt`
+- third-party dependencies listed in `requirements*.txt`
 
 The UNSW-NB15 dataset is not redistributed in this repository. Users must obtain it from the official source and follow the dataset authors' citation requirements described in [Dataset Citation](#dataset-citation).
 

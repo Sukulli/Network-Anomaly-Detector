@@ -11,6 +11,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 METADATA_PATH = PROJECT_ROOT / "models" / "metadata.json"
 SAMPLE_REQUEST_PATH = PROJECT_ROOT / "reports" / "sample_prediction_request.json"
 README_PATH = PROJECT_ROOT / "README.md"
+RUNTIME_REQUIREMENTS_PATH = PROJECT_ROOT / "requirements.txt"
+DEV_REQUIREMENTS_PATH = PROJECT_ROOT / "requirements-dev.txt"
 
 
 def test_sample_prediction_request_matches_api_schema() -> None:
@@ -69,3 +71,14 @@ def test_readme_contains_required_dataset_citation() -> None:
     assert "Slay" in readme
     assert "Sarhan" in readme
     assert "NetFlow Datasets for Machine Learning-Based Network Intrusion Detection Systems" in readme
+
+
+def test_dependency_files_separate_runtime_and_development_tools() -> None:
+    runtime_requirements = RUNTIME_REQUIREMENTS_PATH.read_text(encoding="utf-8")
+    dev_requirements = DEV_REQUIREMENTS_PATH.read_text(encoding="utf-8")
+
+    assert "-r requirements.txt" in dev_requirements
+    assert "pytest" in dev_requirements
+    assert "httpx" in dev_requirements
+    assert "pytest" not in runtime_requirements
+    assert "httpx" not in runtime_requirements
