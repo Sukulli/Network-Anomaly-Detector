@@ -60,7 +60,12 @@ network-anomaly-detector/
 ├── reports/                # Dataset, training, analysis and dashboard outputs
 ├── src/                    # Data loading, preprocessing, training and evaluation
 ├── tests/                  # API tests
+├── CITATION.cff
+├── CONTRIBUTING.md
 ├── Dockerfile
+├── LICENSE
+├── RESPONSIBLE_USE.md
+├── SECURITY.md
 ├── docker-compose.yml
 ├── pyproject.toml
 ├── pytest.ini
@@ -103,6 +108,13 @@ Dataset summary used in the current run:
 `attack_cat` is excluded from the binary model input because it directly describes the attack category and would leak target-related information into the feature set.
 
 See [reports/dataset_overview.md](reports/dataset_overview.md).
+
+## Project Documentation
+
+- [CONTRIBUTING.md](CONTRIBUTING.md) explains the development workflow, required checks and pull request expectations.
+- [SECURITY.md](SECURITY.md) defines the security reporting process and supported project scope.
+- [RESPONSIBLE_USE.md](RESPONSIBLE_USE.md) describes appropriate use, misuse boundaries and operational limitations.
+- [CITATION.cff](CITATION.cff) provides software citation metadata for GitHub and citation tooling.
 
 ## Dataset Citation
 
@@ -372,6 +384,7 @@ The current tests cover:
 - runtime/development dependency file separation
 - required UNSW-NB15 dataset citation in the README
 - linting and formatting through Ruff in GitHub Actions
+- repository hygiene, notebook validity and documentation contract checks
 
 The API tests require `models/model.pkl`. If the model is missing, train the model first.
 
@@ -412,6 +425,12 @@ This license applies only to this repository's original code and documentation. 
 
 The UNSW-NB15 dataset is not redistributed in this repository. Users must obtain it from the official source and follow the dataset authors' citation requirements described in [Dataset Citation](#dataset-citation).
 
+## Citation
+
+If you use this project, cite the software metadata in [CITATION.cff](CITATION.cff) and also cite the UNSW-NB15 dataset papers listed in [Dataset Citation](#dataset-citation).
+
+The software citation does not replace the dataset citation requirements.
+
 ## Limitations
 
 This project is a portfolio-grade ML engineering prototype, not a production IDS.
@@ -451,3 +470,5 @@ Possible next improvements:
 ## Ethical Use
 
 This project is intended for educational and defensive security purposes. It should not be used as the only security control in a real network environment.
+
+See [RESPONSIBLE_USE.md](RESPONSIBLE_USE.md) for explicit appropriate-use and misuse boundaries.

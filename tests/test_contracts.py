@@ -15,6 +15,10 @@ DEV_REQUIREMENTS_PATH = PROJECT_ROOT / "requirements-dev.txt"
 NOTEBOOKS_DIR = PROJECT_ROOT / "notebooks"
 GITIGNORE_PATH = PROJECT_ROOT / ".gitignore"
 DOCKERIGNORE_PATH = PROJECT_ROOT / ".dockerignore"
+SECURITY_PATH = PROJECT_ROOT / "SECURITY.md"
+CONTRIBUTING_PATH = PROJECT_ROOT / "CONTRIBUTING.md"
+RESPONSIBLE_USE_PATH = PROJECT_ROOT / "RESPONSIBLE_USE.md"
+CITATION_PATH = PROJECT_ROOT / "CITATION.cff"
 
 
 def test_sample_prediction_request_matches_api_schema() -> None:
@@ -139,3 +143,36 @@ def test_ignore_rules_cover_local_and_generated_artifacts() -> None:
 
     for pattern in required_dockerignore_patterns:
         assert pattern in dockerignore
+
+
+def test_project_governance_documents_are_present_and_linked() -> None:
+    readme = README_PATH.read_text(encoding="utf-8")
+    expected_documents = [
+        SECURITY_PATH,
+        CONTRIBUTING_PATH,
+        RESPONSIBLE_USE_PATH,
+        CITATION_PATH,
+    ]
+
+    for document_path in expected_documents:
+        assert document_path.exists()
+        assert document_path.read_text(encoding="utf-8").strip()
+        assert document_path.name in readme
+
+
+def test_security_document_sets_clear_non_production_scope() -> None:
+    security_policy = SECURITY_PATH.read_text(encoding="utf-8")
+
+    assert "not a production intrusion detection system" in security_policy
+    assert "Do not open public GitHub issues" in security_policy
+    assert "Do not include real credentials" in security_policy
+
+
+def test_citation_file_contains_project_and_dataset_citation_notice() -> None:
+    citation = CITATION_PATH.read_text(encoding="utf-8")
+
+    assert "cff-version: 1.2.0" in citation
+    assert 'title: "Network Intrusion Detection System"' in citation
+    assert "type: software" in citation
+    assert 'license: "MIT"' in citation
+    assert "UNSW-NB15 dataset papers listed in README.md" in citation
