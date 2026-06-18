@@ -62,6 +62,7 @@ network-anomaly-detector/
 ├── tests/                  # API tests
 ├── Dockerfile
 ├── docker-compose.yml
+├── pyproject.toml
 ├── pytest.ini
 ├── requirements-dev.txt
 ├── requirements.txt
@@ -209,6 +210,8 @@ pip install -r requirements-dev.txt
 `requirements-dev.txt` includes runtime dependencies plus local development and test tools.
 Docker intentionally installs only `requirements.txt`.
 
+Code quality tooling is configured in `pyproject.toml`.
+
 Verify the environment:
 
 ```bash
@@ -347,7 +350,14 @@ Run:
 pytest -q
 ```
 
-GitHub Actions runs the same test suite on every push and pull request to `main`.
+Run static checks and formatting validation:
+
+```bash
+ruff check app src tests
+ruff format --check app src tests
+```
+
+GitHub Actions runs the same test suite and code quality checks on every push and pull request to `main`.
 Because trained model binaries are intentionally excluded from Git, CI runs the model-free contract tests and skips the model-dependent API tests with an explicit reason.
 
 The current tests cover:
@@ -361,6 +371,7 @@ The current tests cover:
 - API schema, sample request and metadata contracts
 - runtime/development dependency file separation
 - required UNSW-NB15 dataset citation in the README
+- linting and formatting through Ruff in GitHub Actions
 
 The API tests require `models/model.pkl`. If the model is missing, train the model first.
 

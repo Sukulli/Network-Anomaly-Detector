@@ -7,7 +7,6 @@ from typing import Any
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
 from starlette.responses import HTMLResponse, Response
 
-
 PREDICTION_REQUESTS = Counter(
     "netshield_prediction_requests_total",
     "Total number of prediction requests.",

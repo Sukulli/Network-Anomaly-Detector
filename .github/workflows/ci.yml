@@ -43,5 +43,11 @@ jobs:
       - name: Compile source files
         run: python -m compileall app src tests
 
+      - name: Run lint checks
+        run: python -m ruff check app src tests
+
+      - name: Check code formatting
+        run: python -m ruff format --check app src tests
+
       - name: Run tests
         run: python -m pytest -q -ra

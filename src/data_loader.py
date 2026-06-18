@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 import os
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 import pandas as pd
-
 
 TARGET_COLUMN = "label"
 ATTACK_CATEGORY_COLUMN = "attack_cat"
@@ -58,7 +57,9 @@ def split_features_target(
         raise ValueError(f"Missing required target column: {TARGET_COLUMN}")
 
     feature_data = data.drop(
-        columns=[col for col in [TARGET_COLUMN, *excluded_columns] if col in data.columns]
+        columns=[
+            col for col in [TARGET_COLUMN, *excluded_columns] if col in data.columns
+        ]
     )
     target = data[TARGET_COLUMN].astype(int)
     return feature_data, target
@@ -67,7 +68,9 @@ def split_features_target(
 def feature_groups(data: pd.DataFrame) -> tuple[list[str], list[str]]:
     excluded = {TARGET_COLUMN, ATTACK_CATEGORY_COLUMN, ID_COLUMN}
     feature_data = data.drop(columns=[col for col in excluded if col in data.columns])
-    categorical = feature_data.select_dtypes(include=["object", "category"]).columns.tolist()
+    categorical = feature_data.select_dtypes(
+        include=["object", "category"]
+    ).columns.tolist()
     numeric = [col for col in feature_data.columns if col not in categorical]
     return numeric, categorical
 

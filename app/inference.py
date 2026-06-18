@@ -10,7 +10,6 @@ import pandas as pd
 
 from app.schemas import PredictionRequest
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_MODEL_PATH = PROJECT_ROOT / "models" / "model.pkl"
 DEFAULT_METADATA_PATH = PROJECT_ROOT / "models" / "metadata.json"
@@ -53,7 +52,9 @@ class ModelService:
             raise RuntimeError("Model is not loaded.")
 
         features = payload.model_dump()
-        row = pd.DataFrame([{column: features[column] for column in self.feature_columns}])
+        row = pd.DataFrame(
+            [{column: features[column] for column in self.feature_columns}]
+        )
         attack_probability = float(self.model.predict_proba(row)[0, 1])
         prediction = int(attack_probability >= self.threshold)
 

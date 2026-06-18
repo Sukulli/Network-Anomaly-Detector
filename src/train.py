@@ -23,7 +23,6 @@ from src.evaluate import evaluate_classifier, metrics_to_markdown
 from src.preprocessor import build_model_pipeline
 from src.utils import ensure_dir, write_json, write_text
 
-
 MODEL_BUILDERS = {
     "logistic_regression": "Logistic Regression",
     "random_forest": "Random Forest",
@@ -39,7 +38,9 @@ def main() -> None:
 
     if args.sample_size:
         train_data = stratified_sample(train_data, args.sample_size, random_state)
-        test_data = stratified_sample(test_data, min(args.sample_size, len(test_data)), random_state)
+        test_data = stratified_sample(
+            test_data, min(args.sample_size, len(test_data)), random_state
+        )
 
     X_train, y_train = split_features_target(train_data)
     X_test, y_test = split_features_target(test_data)
@@ -93,16 +94,22 @@ def main() -> None:
                 f"{model_threshold:.2f} on validation split."
             )
 
-        pipeline = build_pipeline(model_name, numeric_features, categorical_features, random_state)
+        pipeline = build_pipeline(
+            model_name, numeric_features, categorical_features, random_state
+        )
         pipeline.fit(X_train, y_train)
 
-        metrics = evaluate_classifier(pipeline, X_test, y_test, threshold=model_threshold)
+        metrics = evaluate_classifier(
+            pipeline, X_test, y_test, threshold=model_threshold
+        )
         if threshold_selection is not None:
             metrics["threshold_selection"] = threshold_selection
 
         run_results["model_thresholds"][model_name] = model_threshold
         run_results["models"][model_name] = metrics
-        model_markdown_sections.append(metrics_to_markdown(MODEL_BUILDERS[model_name], metrics))
+        model_markdown_sections.append(
+            metrics_to_markdown(MODEL_BUILDERS[model_name], metrics)
+        )
 
         if not args.no_save:
             model_path = output_dir / f"{model_name}_model.pkl"
@@ -112,8 +119,12 @@ def main() -> None:
             if model_name == "random_forest":
                 joblib.dump(pipeline, output_dir / "model.pkl")
 
-    primary_model_name = "random_forest" if "random_forest" in selected_models else selected_models[0]
-    run_results["decision_threshold"] = run_results["model_thresholds"][primary_model_name]
+    primary_model_name = (
+        "random_forest" if "random_forest" in selected_models else selected_models[0]
+    )
+    run_results["decision_threshold"] = run_results["model_thresholds"][
+        primary_model_name
+    ]
     markdown_sections = render_training_markdown(run_results, model_markdown_sections)
 
     if not args.no_save:
@@ -340,7 +351,9 @@ def build_pipeline(
     raise ValueError(f"Unsupported model: {model_name}")
 
 
-def build_metadata(run_results: dict[str, Any], primary_model_name: str) -> dict[str, Any]:
+def build_metadata(
+    run_results: dict[str, Any], primary_model_name: str
+) -> dict[str, Any]:
     primary_metrics = run_results["models"][primary_model_name]
     return {
         "project": "Network Intrusion Detection System",
@@ -442,7 +455,9 @@ def render_training_markdown(
     return lines
 
 
-def stratified_sample(data: pd.DataFrame, sample_size: int, random_state: int) -> pd.DataFrame:
+def stratified_sample(
+    data: pd.DataFrame, sample_size: int, random_state: int
+) -> pd.DataFrame:
     if sample_size >= len(data):
         return data
 
@@ -457,7 +472,9 @@ def stratified_sample(data: pd.DataFrame, sample_size: int, random_state: int) -
     sampled_parts = []
     for label, count in sample_counts.items():
         group = data[data["label"] == label]
-        sampled_parts.append(group.sample(n=min(int(count), len(group)), random_state=random_state))
+        sampled_parts.append(
+            group.sample(n=min(int(count), len(group)), random_state=random_state)
+        )
 
     sampled = pd.concat(sampled_parts, axis=0).sample(frac=1, random_state=random_state)
     return sampled.reset_index(drop=True)

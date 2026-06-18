@@ -6,7 +6,6 @@ from pathlib import Path
 from app.main import app
 from app.schemas import PredictionRequest
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 METADATA_PATH = PROJECT_ROOT / "models" / "metadata.json"
 SAMPLE_REQUEST_PATH = PROJECT_ROOT / "reports" / "sample_prediction_request.json"
@@ -70,7 +69,10 @@ def test_readme_contains_required_dataset_citation() -> None:
     assert "Moustafa" in readme
     assert "Slay" in readme
     assert "Sarhan" in readme
-    assert "NetFlow Datasets for Machine Learning-Based Network Intrusion Detection Systems" in readme
+    assert (
+        "NetFlow Datasets for Machine Learning-Based Network Intrusion Detection Systems"
+        in readme
+    )
 
 
 def test_dependency_files_separate_runtime_and_development_tools() -> None:
@@ -80,5 +82,7 @@ def test_dependency_files_separate_runtime_and_development_tools() -> None:
     assert "-r requirements.txt" in dev_requirements
     assert "pytest" in dev_requirements
     assert "httpx" in dev_requirements
+    assert "ruff" in dev_requirements
     assert "pytest" not in runtime_requirements
     assert "httpx" not in runtime_requirements
+    assert "ruff" not in runtime_requirements

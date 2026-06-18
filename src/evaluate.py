@@ -29,7 +29,9 @@ def evaluate_classifier(
     metrics: dict[str, Any] = {
         "threshold": threshold,
         "accuracy": float(accuracy_score(y, y_pred)),
-        "precision_attack": float(precision_score(y, y_pred, pos_label=1, zero_division=0)),
+        "precision_attack": float(
+            precision_score(y, y_pred, pos_label=1, zero_division=0)
+        ),
         "recall_attack": float(recall_score(y, y_pred, pos_label=1, zero_division=0)),
         "f1_attack": float(f1_score(y, y_pred, pos_label=1, zero_division=0)),
         "classification_report": classification_report(

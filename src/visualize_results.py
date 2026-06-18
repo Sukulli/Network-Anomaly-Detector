@@ -6,7 +6,6 @@ import json
 from pathlib import Path
 from typing import Any
 
-
 METRICS = [
     ("accuracy", "Accuracy"),
     ("precision_attack", "Precision attack"),
@@ -31,7 +30,9 @@ def main() -> None:
 
 def parse_args() -> argparse.Namespace:
     root = project_root()
-    parser = argparse.ArgumentParser(description="Generate an HTML dashboard for training results.")
+    parser = argparse.ArgumentParser(
+        description="Generate an HTML dashboard for training results."
+    )
     parser.add_argument(
         "--results-json",
         type=Path,
@@ -455,7 +456,11 @@ def render_metric_bar(metric_key: str, label: str, value: float | None) -> str:
         width = max(0, min(100, value * 100))
         formatted = format_metric(value)
 
-    fill_class = "fill good" if metric_key in {"recall_attack", "f1_attack", "roc_auc"} else "fill"
+    fill_class = (
+        "fill good"
+        if metric_key in {"recall_attack", "f1_attack", "roc_auc"}
+        else "fill"
+    )
     return (
         f'<div class="metric-row">'
         f"<span>{html.escape(label)}</span>"

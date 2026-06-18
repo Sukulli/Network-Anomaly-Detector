@@ -9,11 +9,16 @@ from typing import Any
 import joblib
 import numpy as np
 import pandas as pd
-from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, precision_score, recall_score
+from sklearn.metrics import (
+    accuracy_score,
+    confusion_matrix,
+    f1_score,
+    precision_score,
+    recall_score,
+)
 
 from src.data_loader import load_testing_data, project_root, split_features_target
 from src.utils import ensure_dir, write_json, write_text
-
 
 DEFAULT_THRESHOLDS = [round(value, 2) for value in np.arange(0.05, 0.96, 0.05)]
 
@@ -32,7 +37,9 @@ def main() -> None:
     threshold_rows = threshold_analysis(y_test, probabilities, args.thresholds)
     default_row = row_for_threshold(threshold_rows, operational_threshold)
     max_f1_row = max(threshold_rows, key=lambda row: row["f1_attack"])
-    high_recall_row = choose_high_recall_threshold(threshold_rows, min_recall=args.min_recall)
+    high_recall_row = choose_high_recall_threshold(
+        threshold_rows, min_recall=args.min_recall
+    )
 
     feature_importance = transformed_feature_importance(pipeline)
     grouped_importance = grouped_feature_importance(feature_importance)
@@ -53,13 +60,21 @@ def main() -> None:
         "test_high_recall_threshold": high_recall_row,
         "min_recall_constraint": args.min_recall,
         "error_summary_at_operational_threshold": error_summary,
-        "top_transformed_features": feature_importance.head(args.top_n).to_dict(orient="records"),
-        "top_grouped_features": grouped_importance.head(args.top_n).to_dict(orient="records"),
+        "top_transformed_features": feature_importance.head(args.top_n).to_dict(
+            orient="records"
+        ),
+        "top_grouped_features": grouped_importance.head(args.top_n).to_dict(
+            orient="records"
+        ),
         "threshold_analysis": threshold_rows,
     }
 
-    feature_importance.to_csv(reports_dir / "random_forest_feature_importance.csv", index=False)
-    grouped_importance.to_csv(reports_dir / "random_forest_grouped_feature_importance.csv", index=False)
+    feature_importance.to_csv(
+        reports_dir / "random_forest_feature_importance.csv", index=False
+    )
+    grouped_importance.to_csv(
+        reports_dir / "random_forest_grouped_feature_importance.csv", index=False
+    )
     pd.DataFrame(threshold_rows).to_csv(
         reports_dir / "random_forest_threshold_analysis.csv",
         index=False,
@@ -70,12 +85,16 @@ def main() -> None:
         render_markdown(result, args.top_n),
     )
 
-    print(f"Random Forest analysis written to {reports_dir / 'random_forest_analysis.md'}")
+    print(
+        f"Random Forest analysis written to {reports_dir / 'random_forest_analysis.md'}"
+    )
 
 
 def parse_args() -> argparse.Namespace:
     root = project_root()
-    parser = argparse.ArgumentParser(description="Analyze the trained Random Forest model.")
+    parser = argparse.ArgumentParser(
+        description="Analyze the trained Random Forest model."
+    )
     parser.add_argument(
         "--model-path",
         type=Path,
@@ -154,8 +173,12 @@ def threshold_analysis(
                 "precision_attack": float(
                     precision_score(y_true, y_pred, pos_label=1, zero_division=0)
                 ),
-                "recall_attack": float(recall_score(y_true, y_pred, pos_label=1, zero_division=0)),
-                "f1_attack": float(f1_score(y_true, y_pred, pos_label=1, zero_division=0)),
+                "recall_attack": float(
+                    recall_score(y_true, y_pred, pos_label=1, zero_division=0)
+                ),
+                "f1_attack": float(
+                    f1_score(y_true, y_pred, pos_label=1, zero_division=0)
+                ),
                 "true_negative": int(tn),
                 "false_positive": int(fp),
                 "false_negative": int(fn),
