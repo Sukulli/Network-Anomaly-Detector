@@ -4,6 +4,12 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 .pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.hypothesis/
+.coverage
+htmlcov/
+*.log
 .DS_Store
 .git/
 .gitignore

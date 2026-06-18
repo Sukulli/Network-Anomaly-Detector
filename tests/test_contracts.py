@@ -12,6 +12,9 @@ SAMPLE_REQUEST_PATH = PROJECT_ROOT / "reports" / "sample_prediction_request.json
 README_PATH = PROJECT_ROOT / "README.md"
 RUNTIME_REQUIREMENTS_PATH = PROJECT_ROOT / "requirements.txt"
 DEV_REQUIREMENTS_PATH = PROJECT_ROOT / "requirements-dev.txt"
+NOTEBOOKS_DIR = PROJECT_ROOT / "notebooks"
+GITIGNORE_PATH = PROJECT_ROOT / ".gitignore"
+DOCKERIGNORE_PATH = PROJECT_ROOT / ".dockerignore"
 
 
 def test_sample_prediction_request_matches_api_schema() -> None:
@@ -86,3 +89,53 @@ def test_dependency_files_separate_runtime_and_development_tools() -> None:
     assert "pytest" not in runtime_requirements
     assert "httpx" not in runtime_requirements
     assert "ruff" not in runtime_requirements
+
+
+def test_tracked_notebooks_are_valid_notebook_documents() -> None:
+    notebook_paths = sorted(NOTEBOOKS_DIR.glob("*.ipynb"))
+
+    assert notebook_paths
+
+    for notebook_path in notebook_paths:
+        payload = json.loads(notebook_path.read_text(encoding="utf-8"))
+
+        assert payload["nbformat"] >= 4
+        assert isinstance(payload.get("cells"), list)
+        assert payload["cells"], f"{notebook_path.name} must not be empty"
+
+
+def test_ignore_rules_cover_local_and_generated_artifacts() -> None:
+    gitignore = GITIGNORE_PATH.read_text(encoding="utf-8")
+    dockerignore = DOCKERIGNORE_PATH.read_text(encoding="utf-8")
+
+    required_gitignore_patterns = [
+        ".venv/",
+        ".env",
+        "__pycache__/",
+        ".pytest_cache/",
+        ".ruff_cache/",
+        "data/raw/",
+        "data/processed/",
+        "models/*.pkl",
+        "!models/metadata.json",
+        ".DS_Store",
+    ]
+    required_dockerignore_patterns = [
+        ".venv/",
+        ".env",
+        "__pycache__/",
+        ".pytest_cache/",
+        ".ruff_cache/",
+        ".git/",
+        "data/raw/",
+        "data/processed/",
+        "notebooks/",
+        "reports/*",
+        "!reports/sample_prediction_request.json",
+    ]
+
+    for pattern in required_gitignore_patterns:
+        assert pattern in gitignore
+
+    for pattern in required_dockerignore_patterns:
+        assert pattern in dockerignore
