@@ -385,6 +385,10 @@ The current tests cover:
 - required UNSW-NB15 dataset citation in the README
 - linting and formatting through Ruff in GitHub Actions
 - repository hygiene, notebook validity and documentation contract checks
+- ML data splitting, leakage prevention and feature grouping
+- preprocessing behavior with unseen categorical values
+- Logistic Regression and Random Forest pipeline smoke tests on synthetic data
+- threshold selection and no-save training smoke workflow
 
 The API tests require `models/model.pkl`. If the model is missing, train the model first.
 
