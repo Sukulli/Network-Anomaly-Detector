@@ -54,12 +54,14 @@ FastAPI inference service
 ```text
 network-anomaly-detector/
 ├── app/                    # FastAPI app, inference service and monitoring
+├── docs/                   # Portfolio screenshots and documentation assets
 ├── data/                   # Local data folder, raw data is not committed
 ├── models/                 # Metadata is tracked, binary models are ignored
 ├── notebooks/              # Exploratory notebooks
 ├── reports/                # Dataset, training, analysis and dashboard outputs
 ├── src/                    # Data loading, preprocessing, training and evaluation
-├── tests/                  # API tests
+├── tests/                  # API, contract and ML pipeline tests
+├── CHANGELOG.md
 ├── CITATION.cff
 ├── CONTRIBUTING.md
 ├── Dockerfile
@@ -210,7 +212,7 @@ Feature importance is useful for model inspection, but it should not be interpre
 Python 3.12 is recommended.
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Sukulli/Network-Anomaly-Detector.git
 cd network-anomaly-detector
 
 python3.12 -m venv .venv

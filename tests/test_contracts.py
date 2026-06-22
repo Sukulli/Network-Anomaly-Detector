@@ -19,6 +19,7 @@ SECURITY_PATH = PROJECT_ROOT / "SECURITY.md"
 CONTRIBUTING_PATH = PROJECT_ROOT / "CONTRIBUTING.md"
 RESPONSIBLE_USE_PATH = PROJECT_ROOT / "RESPONSIBLE_USE.md"
 CITATION_PATH = PROJECT_ROOT / "CITATION.cff"
+CHANGELOG_PATH = PROJECT_ROOT / "CHANGELOG.md"
 
 
 def test_sample_prediction_request_matches_api_schema() -> None:
@@ -80,6 +81,7 @@ def test_openapi_schema_documents_core_endpoints() -> None:
 def test_readme_contains_required_dataset_citation() -> None:
     readme = README_PATH.read_text(encoding="utf-8")
 
+    assert "<repository-url>" not in readme
     assert "## Dataset Citation" in readme
     assert "https://research.unsw.edu.au/projects/unsw-nb15-dataset" in readme
     assert "Moustafa" in readme
@@ -157,6 +159,7 @@ def test_ignore_rules_cover_local_and_generated_artifacts() -> None:
 def test_project_governance_documents_are_present_and_linked() -> None:
     readme = README_PATH.read_text(encoding="utf-8")
     expected_documents = [
+        CHANGELOG_PATH,
         SECURITY_PATH,
         CONTRIBUTING_PATH,
         RESPONSIBLE_USE_PATH,
@@ -184,4 +187,13 @@ def test_citation_file_contains_project_and_dataset_citation_notice() -> None:
     assert 'title: "Network Intrusion Detection System"' in citation
     assert "type: software" in citation
     assert 'license: "MIT"' in citation
+    assert 'version: "0.1.0"' in citation
     assert "UNSW-NB15 dataset papers listed in README.md" in citation
+
+
+def test_changelog_documents_initial_release() -> None:
+    changelog = CHANGELOG_PATH.read_text(encoding="utf-8")
+
+    assert "## v0.1.0 - 2026-06-22" in changelog
+    assert "Initial portfolio-ready MVP release." in changelog
+    assert "Documented Limitations" in changelog
