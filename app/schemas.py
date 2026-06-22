@@ -4,7 +4,57 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class PredictionRequest(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(
+        extra="forbid",
+        json_schema_extra={
+            "examples": [
+                {
+                    "dur": 0.000011,
+                    "proto": "udp",
+                    "service": "-",
+                    "state": "INT",
+                    "spkts": 2,
+                    "dpkts": 0,
+                    "sbytes": 496,
+                    "dbytes": 0,
+                    "rate": 90909.0902,
+                    "sttl": 254,
+                    "dttl": 0,
+                    "sload": 180363632.0,
+                    "dload": 0.0,
+                    "sloss": 0,
+                    "dloss": 0,
+                    "sinpkt": 0.011,
+                    "dinpkt": 0.0,
+                    "sjit": 0.0,
+                    "djit": 0.0,
+                    "swin": 0,
+                    "stcpb": 0,
+                    "dtcpb": 0,
+                    "dwin": 0,
+                    "tcprtt": 0.0,
+                    "synack": 0.0,
+                    "ackdat": 0.0,
+                    "smean": 248,
+                    "dmean": 0,
+                    "trans_depth": 0,
+                    "response_body_len": 0,
+                    "ct_srv_src": 2,
+                    "ct_state_ttl": 2,
+                    "ct_dst_ltm": 1,
+                    "ct_src_dport_ltm": 1,
+                    "ct_dst_sport_ltm": 1,
+                    "ct_dst_src_ltm": 2,
+                    "is_ftp_login": 0,
+                    "ct_ftp_cmd": 0,
+                    "ct_flw_http_mthd": 0,
+                    "ct_src_ltm": 1,
+                    "ct_srv_dst": 2,
+                    "is_sm_ips_ports": 0,
+                }
+            ]
+        },
+    )
 
     dur: float = Field(..., ge=0)
     proto: str
@@ -51,6 +101,20 @@ class PredictionRequest(BaseModel):
 
 
 class PredictionResponse(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {
+                    "prediction": 1,
+                    "prediction_label": "attack",
+                    "attack_probability": 0.7458317542992821,
+                    "threshold": 0.55,
+                    "model_name": "Random Forest",
+                }
+            ]
+        }
+    )
+
     prediction: int
     prediction_label: str
     attack_probability: float
@@ -59,8 +123,59 @@ class PredictionResponse(BaseModel):
 
 
 class HealthResponse(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {
+                    "status": "ok",
+                    "model_loaded": True,
+                    "model_name": "Random Forest",
+                    "generated_at": "2026-06-17T07:49:02.589247+00:00",
+                    "threshold": 0.55,
+                    "status_detail": "Model loaded successfully.",
+                }
+            ]
+        }
+    )
+
     status: str
     model_loaded: bool
     model_name: str | None = None
     generated_at: str | None = None
     threshold: float | None = None
+    status_detail: str | None = None
+
+
+class MetadataResponse(BaseModel):
+    service_name: str
+    service_version: str
+    dataset: str
+    task: str
+    target: str
+    primary_model: str | None = None
+    primary_model_display_name: str | None = None
+    model_loaded: bool
+    decision_threshold: float | None = None
+    generated_at: str | None = None
+    train_rows: int | None = None
+    test_rows: int | None = None
+    input_features: int | None = None
+    excluded_columns: list[str]
+
+
+class ErrorResponse(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {
+                    "error": "model_not_loaded",
+                    "message": "Model is not loaded. Train or restore the model artifact first.",
+                    "status_code": 503,
+                }
+            ]
+        }
+    )
+
+    error: str
+    message: str
+    status_code: int

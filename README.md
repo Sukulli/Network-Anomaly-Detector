@@ -46,7 +46,7 @@ Saved scikit-learn pipeline
 FastAPI inference service
         |
         v
-/predict, /health, /metrics, /monitoring
+/predict, /health, /metadata, /metrics, /monitoring
 ```
 
 ## Project Structure
@@ -293,15 +293,26 @@ Available endpoints:
 | Endpoint | Method | Purpose |
 | --- | --- | --- |
 | `/health` | GET | Service and model status |
+| `/metadata` | GET | Dataset, model and training metadata exposed by the service |
 | `/predict` | POST | Binary prediction for one network-flow record |
 | `/metrics` | GET | Prometheus-compatible raw metrics |
 | `/monitoring` | GET | Human-readable monitoring dashboard |
 | `/monitoring/snapshot` | GET | Monitoring state as JSON |
 
+If the model artifact is missing or cannot be loaded, the API starts in `degraded`
+mode. In that state, `/health` remains available and `/predict` returns a
+structured `503` response instead of failing with an unhandled server error.
+
 Health check:
 
 ```bash
 curl http://127.0.0.1:8000/health
+```
+
+Metadata:
+
+```bash
+curl http://127.0.0.1:8000/metadata
 ```
 
 Prediction with the included sample request:
@@ -321,6 +332,16 @@ Example response:
   "attack_probability": 0.7458317542992821,
   "threshold": 0.55,
   "model_name": "Random Forest"
+}
+```
+
+Example unavailable-model response:
+
+```json
+{
+  "error": "model_not_loaded",
+  "message": "Model is not loaded. Train or restore the model artifact first.",
+  "status_code": 503
 }
 ```
 
@@ -377,6 +398,8 @@ The current tests cover:
 - `GET /health`
 - valid `POST /predict`
 - invalid `POST /predict` payload
+- degraded API behavior when the model artifact is unavailable
+- structured API error responses
 - `GET /metrics`
 - `GET /monitoring`
 - `GET /monitoring/snapshot`

@@ -60,12 +60,21 @@ def test_openapi_schema_documents_core_endpoints() -> None:
 
     assert openapi_schema["info"]["title"] == "Network Intrusion Detection System"
     assert "/health" in paths
+    assert "/metadata" in paths
     assert "/predict" in paths
     assert "/metrics" in paths
     assert paths["/health"]["get"]["responses"]["200"]
+    assert paths["/metadata"]["get"]["responses"]["200"]
     assert paths["/predict"]["post"]["requestBody"]["required"] is True
     assert paths["/predict"]["post"]["responses"]["200"]
+    assert paths["/predict"]["post"]["responses"]["500"]
+    assert paths["/predict"]["post"]["responses"]["503"]
     assert paths["/metrics"]["get"]["responses"]["200"]
+
+    schemas = openapi_schema["components"]["schemas"]
+    assert "ErrorResponse" in schemas
+    assert "MetadataResponse" in schemas
+    assert schemas["PredictionRequest"]["examples"]
 
 
 def test_readme_contains_required_dataset_citation() -> None:

@@ -310,6 +310,7 @@ def monitoring_dashboard_response(model_health: dict[str, Any]) -> HTMLResponse:
       <nav class="links" aria-label="Service links">
         <a href="/docs">API Docs</a>
         <a href="/health">Health JSON</a>
+        <a href="/metadata">Metadata JSON</a>
         <a href="/metrics">Prometheus Metrics</a>
       </nav>
     </header>

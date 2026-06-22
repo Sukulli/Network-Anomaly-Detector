@@ -16,6 +16,30 @@ DEFAULT_METADATA_PATH = PROJECT_ROOT / "models" / "metadata.json"
 DEFAULT_THRESHOLD = 0.5
 
 
+class ModelServiceError(RuntimeError):
+    error_code = "model_service_error"
+    status_code = 500
+
+    def __init__(self, public_message: str) -> None:
+        super().__init__(public_message)
+        self.public_message = public_message
+
+
+class ModelLoadError(ModelServiceError):
+    error_code = "model_load_failed"
+    status_code = 503
+
+
+class ModelNotLoadedError(ModelServiceError):
+    error_code = "model_not_loaded"
+    status_code = 503
+
+
+class PredictionFailureError(ModelServiceError):
+    error_code = "prediction_failed"
+    status_code = 500
+
+
 class ModelService:
     def __init__(
         self,
@@ -28,12 +52,15 @@ class ModelService:
         self.metadata: dict[str, Any] = {}
         self.feature_columns: list[str] = []
         self.threshold = DEFAULT_THRESHOLD
+        self.load_error: str | None = None
 
     def load(self) -> None:
-        if not self.model_path.exists():
-            raise FileNotFoundError(f"Model file not found: {self.model_path}")
+        self.model = None
+        self.metadata = {}
+        self.feature_columns = []
+        self.threshold = DEFAULT_THRESHOLD
+        self.load_error = None
 
-        self.model = joblib.load(self.model_path)
         self.metadata = self._load_metadata()
         self.threshold = self._load_threshold()
         self.feature_columns = [
@@ -41,21 +68,51 @@ class ModelService:
             *self.metadata.get("categorical_features", []),
         ]
 
+        if not self.model_path.exists():
+            self.load_error = (
+                "Model artifact is missing. Train the model before serving predictions."
+            )
+            raise ModelLoadError(self.load_error)
+
+        try:
+            self.model = joblib.load(self.model_path)
+        except Exception as exc:
+            self.load_error = "Model artifact could not be loaded."
+            raise ModelLoadError(self.load_error) from exc
+
         if not self.feature_columns:
-            raise ValueError("Model metadata does not define input feature columns.")
+            self.model = None
+            self.load_error = "Model metadata does not define input feature columns."
+            raise ModelLoadError(self.load_error)
 
     def is_loaded(self) -> bool:
         return self.model is not None
 
     def predict(self, payload: PredictionRequest) -> dict[str, Any]:
         if self.model is None:
-            raise RuntimeError("Model is not loaded.")
+            raise ModelNotLoadedError(
+                "Model is not loaded. Train or restore the model artifact first."
+            )
 
         features = payload.model_dump()
+        missing_features = [
+            column for column in self.feature_columns if column not in features
+        ]
+        if missing_features:
+            raise PredictionFailureError(
+                "Model metadata is not aligned with the prediction request schema."
+            )
+
         row = pd.DataFrame(
             [{column: features[column] for column in self.feature_columns}]
         )
-        attack_probability = float(self.model.predict_proba(row)[0, 1])
+        try:
+            attack_probability = float(self.model.predict_proba(row)[0, 1])
+        except Exception as exc:
+            raise PredictionFailureError(
+                "Prediction failed during model inference."
+            ) from exc
+
         prediction = int(attack_probability >= self.threshold)
 
         return {
@@ -73,18 +130,51 @@ class ModelService:
             "model_name": self.metadata.get("primary_model_display_name"),
             "generated_at": self.metadata.get("generated_at"),
             "threshold": self.threshold if self.is_loaded() else None,
+            "status_detail": (
+                "Model loaded successfully."
+                if self.is_loaded()
+                else self.load_error or "Model is not loaded."
+            ),
+        }
+
+    def metadata_summary(self) -> dict[str, Any]:
+        return {
+            "service_name": "Network Intrusion Detection System",
+            "service_version": "0.1.0",
+            "dataset": self.metadata.get("dataset", "UNSW-NB15"),
+            "task": self.metadata.get("task", "binary_classification"),
+            "target": self.metadata.get("target", "label"),
+            "primary_model": self.metadata.get("primary_model"),
+            "primary_model_display_name": self.metadata.get(
+                "primary_model_display_name"
+            ),
+            "model_loaded": self.is_loaded(),
+            "decision_threshold": self.threshold if self.is_loaded() else None,
+            "generated_at": self.metadata.get("generated_at"),
+            "train_rows": self.metadata.get("train_rows"),
+            "test_rows": self.metadata.get("test_rows"),
+            "input_features": len(self.feature_columns) or None,
+            "excluded_columns": self.metadata.get("excluded_columns", []),
         }
 
     def _load_metadata(self) -> dict[str, Any]:
         if not self.metadata_path.exists():
             return {}
 
-        return json.loads(self.metadata_path.read_text(encoding="utf-8"))
+        try:
+            return json.loads(self.metadata_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            self.load_error = "Model metadata is not valid JSON."
+            raise ModelLoadError(self.load_error) from exc
 
     def _load_threshold(self) -> float:
         env_threshold = os.getenv("NETSHIELD_THRESHOLD")
         if env_threshold is not None:
-            return float(env_threshold)
+            try:
+                return float(env_threshold)
+            except ValueError as exc:
+                self.load_error = "NETSHIELD_THRESHOLD must be a valid number."
+                raise ModelLoadError(self.load_error) from exc
 
         return float(self.metadata.get("decision_threshold", DEFAULT_THRESHOLD))
 
